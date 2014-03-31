@@ -1,0 +1,38 @@
+[mysqld]
+datadir                         = /var/lib/mysql
+log_error                       = error.log
+
+log-bin
+
+# Different server id
+server-id                       = <%= @server_id %>
+
+query_cache_size                = 0
+query_cache_type                = 0
+
+innodb_buffer_pool_size         = <%= @innodb_buffer_pool_size %>
+innodb_log_file_size            = <%= @innodb_log_file_size %>
+innodb_flush_method             = O_DIRECT
+innodb_file_per_table
+innodb_flush_log_at_trx_commit	= <%= @innodb_flush_log_at_trx_commit %>
+
+skip-name-resolve
+
+
+binlog_format                   = ROW
+log-bin                         = binlog-<%= @hostname %> 
+
+# Required for fabric
+gtid-mode                       = ON
+log-slave-updates
+enforce-gtid-consistency
+
+
+performance_schema              = OFF
+<%= @extra_mysqld_config %>
+
+[mysql]
+prompt                          = "<%= @hostname %> mysql> "
+
+[client]
+user                            = root

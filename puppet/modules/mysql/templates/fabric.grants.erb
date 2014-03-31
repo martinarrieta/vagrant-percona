@@ -1,0 +1,6 @@
+-- Fabric database.
+CREATE DATABASE <%= @fabric_database %>;
+
+-- Fabric user and grants
+GRANT ALL ON <%= @fabric_database %>.* TO '<%= @fabric_user %>'@'192.168.70.%' IDENTIFIED BY '<%= @fabric_password %>';
+

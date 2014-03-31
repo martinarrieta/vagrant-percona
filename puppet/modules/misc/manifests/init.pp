@@ -46,5 +46,10 @@ class misc {
 			command => "echo 0 >/selinux/enforce",
 			unless => "grep 0 /selinux/enforce";
   }
+	
+	# added because http://projects.puppetlabs.com/issues/18429
+	file { "/selinux/enforce": 
+		ensure => absent,
+		require => Exec['disable-selinux'] }
 }
 

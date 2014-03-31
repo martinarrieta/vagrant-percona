@@ -1,0 +1,63 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Assumes a box from https://github.com/jayjanssen/packer-percona
+
+# This sets up 3 nodes, one with fabric-server and 2 nodes with fabric-connector.
+
+require './lib/vagrant-common.rb'
+
+# Our puppet config
+puppet_config = {
+	'fabric_user' => 'fabric',
+	'fabric_password' => 'f4bric',
+	'fabric_database' => 'fabric',
+	'innodb_buffer_pool_size' => '128M',
+	'innodb_log_file_size' => '64M',
+	'innodb_flush_log_at_trx_commit' => '0',
+}
+
+
+
+
+# Node names and ips (for local VMs)
+# Security groups are 'default' (22 open) and 'pxc' (3306, 4567-4568,4444 open) for each respective region
+pxc_nodes = {
+	'fabric-server' => {
+		'ip' => '192.168.70.101',
+		'type' => 'fabric-server',
+		'server_id' => '70102'
+	
+	},
+	'node1' => {
+		'ip' => '192.168.70.102',
+		'type' => 'fabric-node',
+		'server_id' => '70102'
+	},
+	'node2' => {
+		'ip' => '192.168.70.103',
+		'type' => 'fabric-node',
+		'server_id' => '70103'
+	},
+}
+
+
+Vagrant.configure("2") do |config|
+	config.vm.box = 'CentOS-6.4-x86_64-v20130731'
+	
+	#config.vm.box = "perconajayj/centos-x86_64"
+	#config.ssh.username = "root"
+
+	# Create all three nodes identically except for name and ip
+	pxc_nodes.each_pair { |node, node_params|
+		config.vm.define node do |node_config|
+			node_config.vm.hostname = "#{node}.local"
+			node_config.vm.network :private_network, ip: node_params['ip']
+			provider_virtualbox( node_config, '256') { |vb, override|
+				provision_puppet( override, node_params['type'] + '.pp', puppet_config.merge( 'server_id' => node_params['ip'].split('.')[3]))
+			}
+
+		end
+	}
+end
+

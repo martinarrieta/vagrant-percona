@@ -1,0 +1,31 @@
+[DEFAULT]
+prefix                          = /usr
+sysconfdir                      = /etc
+logdir                          = /var/log
+
+[storage]
+address                         = 192.168.70.101:3306
+user                            = <%= @fabric_user %>
+password                        = <%= @fabric_password %>
+database                        = <%= @fabric_database %>
+connection_timeout              = 6
+connection_attempts             = 6
+connection_delay                = 1
+
+[protocol.xmlrpc]
+address                         = 192.168.70.101:8080
+threads                         = 5
+
+[executor]
+executors                       = 5
+
+[logging]
+level                           = INFO
+url                             = file:///var/log/fabric.log
+
+[sharding]
+mysqldump_program               = /usr/bin/mysqldump
+mysqlclient_program             = /usr/bin/mysql
+
+[connector]
+ttl                             = 1
